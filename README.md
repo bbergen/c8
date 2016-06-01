@@ -8,4 +8,4 @@
   * `git clone git@github.com:bbergen/c8.git`
   * `cd c8`
   * `make`
-  * `./c8 <path/to/rom>
+  * `./c8 <path/to/rom>`
