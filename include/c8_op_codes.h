@@ -12,7 +12,18 @@
 #define OP_SET_IMM  0x6000
 #define OP_ADD_IMM  0x7000
 
-//TODO(bryan) define 8s
+#define OP_SET_REG  0x8000
+/*
+* The following 8 op codes must be checked after OP_SET_REG
+*/
+#define OP_SET_OR   0x0001
+#define OP_SET_AND  0x0002
+#define OP_SET_XOR  0x0003
+#define OP_ADD_REG  0x0004
+#define OP_X_SUB_Y  0x0005
+#define OP_RS_REG   0x0006
+#define OP_Y_SUB_X  0x0007
+#define OP_LS_REG   0x000E
 
 #define OP_NEQ_NEQ  0x9000
 #define OP_SET_IDX  0xA000

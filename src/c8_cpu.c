@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "c8_cpu.h"
 #include "c8_op_codes.h"
 
@@ -56,10 +57,8 @@ c8_cpu_init(void) {
 }
 
 void
-c8_cpu_load_rom(C8_BYTE* rom, int rom_size) {
-  (void)rom;
-  (void)rom_size;
-  //TODO(bryan) map rom to chip8 memory
+c8_cpu_load_rom(struct c8_cpu* cpu, C8_BYTE* rom, int rom_size) {
+  memcpy(&cpu->ram[C8_INITIAL_ADDRESS], rom, rom_size);
 }
 
 void

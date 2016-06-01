@@ -22,7 +22,7 @@ c8_cpu_init(void);
 * Maps a loaded rom to the c8_cpu's memory space
 */
 void
-c8_cpu_load_rom(C8_BYTE*, int);
+c8_cpu_load_rom(struct c8_cpu*, C8_BYTE*, int);
 
 /*
 * Deallocates all memory associated with the c8_cpu

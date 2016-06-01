@@ -41,7 +41,7 @@ main(int argc, char **argv) {
   fprintf(stdout, "Loaded %s - %d bytes\n", file_name, file_size);
 
   struct c8_cpu* cpu = c8_cpu_init();
-  c8_cpu_load_rom(c8_rom, file_size);
+  c8_cpu_load_rom(cpu, c8_rom, file_size);
   c8_unload_binary(c8_rom);
 
   int running = 1;
