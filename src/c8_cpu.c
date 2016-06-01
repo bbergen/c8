@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "c8_cpu.h"
+#include "c8_op_codes.h"
 
 /************************************************************
 *   CHIP8 Memory Map - 4K total (4096 Bytes)                *
@@ -85,16 +86,6 @@ c8_cpu_update_key_state(struct c8_cpu* cpu) {
   (void)cpu;
   //TODO(bryan) implement
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

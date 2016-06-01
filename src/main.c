@@ -38,10 +38,26 @@ main(int argc, char **argv) {
   int file_size;
   C8_BYTE* c8_rom = c8_load_binary(file_name, &file_size);
 
+  fprintf(stdout, "Loaded %s - %d bytes\n", file_name, file_size);
+
   struct c8_cpu* cpu = c8_cpu_init();
   c8_cpu_load_rom(c8_rom, file_size);
   c8_unload_binary(c8_rom);
-  c8_cpu_destroy(cpu);
 
+  int running = 1;
+
+  //TODO(bryan) initialize graphics here
+  while (running) {
+    c8_cpu_cycle(cpu);
+
+    if (c8_cpu_draw_flag_set(cpu)) {
+      //TODO(bryan) render to screen
+    }
+
+    c8_cpu_update_key_state(cpu);
+  }
+
+
+  c8_cpu_destroy(cpu);
   return 0;
 }
