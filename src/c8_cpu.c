@@ -49,6 +49,13 @@ c8_cpu_init(void) {
 }
 
 void
+c8_cpu_load_rom(C8_BYTE* rom, int rom_size) {
+  (void)rom;
+  (void)rom_size;
+  //TODO(bryan) map rom to chip8 memory
+}
+
+void
 c8_cpu_destroy(struct c8_cpu* cpu) {
   if (cpu) {
     free(cpu);
@@ -56,11 +63,37 @@ c8_cpu_destroy(struct c8_cpu* cpu) {
 }
 
 void
-c8_cpu_load_rom(C8_BYTE* rom, int rom_size) {
-  (void)rom;
-  (void)rom_size;
-  //TODO(bryan) map rom to chip8 memory
+c8_cpu_cycle(struct c8_cpu* cpu) {
+  (void)cpu;
+  //TODO(bryan) implement
+
+  // fetch
+  // decode
+  // execute
+
+  // update timers
 }
+
+short
+c8_cpu_draw_flag_set(struct c8_cpu* cpu) {
+  (void)cpu;
+  return 0; //TODO(bryan) implement
+}
+
+void
+c8_cpu_update_key_state(struct c8_cpu* cpu) {
+  (void)cpu;
+  //TODO(bryan) implement
+}
+
+
+
+
+
+
+
+
+
 
 
 
