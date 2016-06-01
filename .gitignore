@@ -2,4 +2,4 @@ bin/
 build/
 *.o
 c8
-.swp
+*.swp
