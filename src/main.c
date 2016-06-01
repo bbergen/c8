@@ -1,5 +1,30 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "c8_cpu.h"
+
+C8_BYTE*
+c8_load_binary(char* file_name, int* size_out) {
+  FILE* bin_file = fopen(file_name, "r");
+  if (!bin_file) {
+    fprintf(stderr, "Unable to open %s\n", file_name);
+    exit(1);
+  }
+  fseek(bin_file, 0, SEEK_END);
+  long file_size = ftell(bin_file);
+  fseek(bin_file, 0, SEEK_SET);
+
+  C8_BYTE* buffer = malloc(sizeof(C8_BYTE) * file_size);
+  *size_out = (int) fread(buffer, 1, file_size, bin_file);
+  fclose(bin_file);
+  return buffer;
+}
+
+void 
+c8_unload_binary(C8_BYTE* binary) {
+  if (binary) {
+    free(binary);
+  }
+}
 
 int
 main(int argc, char **argv) {
@@ -10,7 +35,9 @@ main(int argc, char **argv) {
   }
 
   char* file_name = argv[1];
-  fprintf(stdout, "%s\n", file_name);
-
+  int file_size;
+  C8_BYTE* c8_rom = c8_load_binary(file_name, &file_size);
+  fprintf(stdout, "%d bytes successfully loaded\n", file_size);
+  c8_unload_binary(c8_rom);
   return 0;
 }
