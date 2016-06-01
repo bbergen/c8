@@ -9,6 +9,9 @@ struct c8_cpu*
 c8_cpu_init(void);
 
 void
+c8_cpu_load_rom(C8_BYTE*, int);
+
+void
 c8_cpu_destroy(struct c8_cpu*);
 
 void

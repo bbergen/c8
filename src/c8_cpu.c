@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "c8_cpu.h"
 
 /************************************************************
@@ -11,6 +12,8 @@
 #define C8_REG_COUNT 16
 #define C8_STACK_SIZE 16
 #define C8_HEX_KEYS 16
+#define C8_RAM_SIZE 4096
+#define C8_SCREEN_PIXELS (64 * 32)
 
 typedef unsigned char C8_REG_8;
 typedef unsigned short C8_REG_16;
@@ -32,4 +35,33 @@ struct c8_cpu {
   struct c8_stack stack;                    // Stores function return
 
   C8_BYTE c8_hex_keypad[C8_HEX_KEYS];       // Stores key states
+
+  C8_BYTE c8_ram[C8_RAM_SIZE];
+
+  C8_BYTE c8_screen[C8_SCREEN_PIXELS];
 };
+
+struct c8_cpu*
+c8_cpu_init(void) {
+  struct c8_cpu* cpu = calloc(1, sizeof(struct c8_cpu));
+  //TODO(bryan) other initializations
+  return cpu;
+}
+
+void
+c8_cpu_destroy(struct c8_cpu* cpu) {
+  if (cpu) {
+    free(cpu);
+  }
+}
+
+void
+c8_cpu_load_rom(C8_BYTE* rom, int rom_size) {
+  (void)rom;
+  (void)rom_size;
+  //TODO(bryan) map rom to chip8 memory
+}
+
+
+
+

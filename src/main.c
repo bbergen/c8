@@ -37,7 +37,11 @@ main(int argc, char **argv) {
   char* file_name = argv[1];
   int file_size;
   C8_BYTE* c8_rom = c8_load_binary(file_name, &file_size);
-  fprintf(stdout, "%d bytes successfully loaded\n", file_size);
+
+  struct c8_cpu* cpu = c8_cpu_init();
+  c8_cpu_load_rom(c8_rom, file_size);
   c8_unload_binary(c8_rom);
+  c8_cpu_destroy(cpu);
+
   return 0;
 }
