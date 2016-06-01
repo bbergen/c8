@@ -15,7 +15,7 @@
 //TODO(bryan) define 8s
 
 #define OP_NEQ_NEQ  0x9000
-#define OP_SET_I    0xA000
+#define OP_SET_IDX  0xA000
 #define OP_JMP_V0   0xB000
 #define OP_SET_RND  0xC000
 #define OP_DRAW     0xD000
