@@ -24,7 +24,7 @@
 #define OP_SET_OR   0x0001  // 0x8XY1 - Sets VX to (VX | VY)
 #define OP_SET_AND  0x0002  // 0x8XY2 - Sets VX to (VX & VY)
 #define OP_SET_XOR  0x0003  // 0x8XY3 - Sets VX to (VX ^ VY)
-#define OP_ADD_REG  0x0004  // 0x8XY4 - Adds VX to VY (VF set when carry)
+#define OP_ADD_REG  0x0004  // 0x8XY4 - Adds VY to VX (VF set when carry)
 #define OP_X_SUB_Y  0x0005  // 0x8XY5 - VY subbed from VX (VF set 0 on borrow)
 #define OP_RS_REG   0x0006  // 0x8XY6 - VX >> 1 (VF set to lsb prior to shift)
 #define OP_Y_SUB_X  0x0007  // 0x8XY7 - Set VX to (VY - VX) (VF 0 on borrow)

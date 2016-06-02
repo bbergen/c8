@@ -19,6 +19,7 @@
 #define C8_HEX_KEYS 16
 #define C8_RAM_SIZE 4096
 #define C8_SCREEN_PIXELS (64 * 32)
+#define C8_CARRY 15
 
 #define C8_INITIAL_ADDRESS 0x200
 
@@ -120,11 +121,11 @@ c8_fetch(struct c8_cpu* cpu) {
 
 INTERNAL void
 c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
+  C8_INT_16 vx = op_code & 0x0F00 >> 8;
+  C8_INT_16 vy = op_code & 0x00F0 >> 4;
+  C8_INT_16 imm;
+  C8_INT_16 addr;
   switch(op_code & AND_TOP_MSK) {
-    C8_INT_16 vx;
-    C8_INT_16 vy;
-    C8_INT_16 imm;
-    C8_INT_16 addr;
     case OP_0000:
       switch (op_code & AND_BOT_MSK) {
         case OP_CLR_SCN:
@@ -139,15 +140,17 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
           exit(2);
           break;
       }
+      break;
     case OP_JMP_ADR:
       addr = op_code & 0x0FFF;
       cpu->reg_pc = addr;
       break;
     case OP_CLL_SUB:
-      // push pc on stack, adjust pc
+      c8_stack_push(&cpu->stack, cpu->reg_pc); 
+      addr = op_code & 0x0FFF;
+      cpu->reg_pc = addr;
       break;
     case OP_TST_EQ:
-      vx = op_code & 0x0F00;
       imm = op_code & 0x00FF;
       if (cpu->reg_v[vx] == imm) {
         cpu->reg_pc += 2;
@@ -155,7 +158,6 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
       cpu->reg_pc += 2;
       break;
     case OP_TST_NEQ:
-      vx = op_code & 0x0F00;
       imm = op_code & 0x00FF;
       if (cpu->reg_v[vx] != imm) {
         cpu->reg_pc += 2;
@@ -163,23 +165,50 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
       cpu->reg_pc += 2;
       break;
     case OP_EQ_EQ:
-      vx = op_code & 0x0F00;
-      vy = op_code & 0x00F0;
       if (cpu->reg_v[vx] == cpu->reg_v[vy]) {
         cpu->reg_pc += 2;
       }
       cpu->reg_pc += 2;
       break;
     case OP_SET_IMM:
-      vx = op_code & 0x0F00;
       imm = op_code & 0x0FF;
       cpu->reg_v[vx] = imm;
       cpu->reg_pc += 2;
       break;
     case OP_ADD_IMM:
-      vx = op_code & 0x0F00;
       imm = op_code & 0x00FF;
       cpu->reg_v[vx] += imm;
+      cpu->reg_pc += 2;
+      break;
+    case OP_8000:
+      // need to check right most bit
+      switch (op_code & AND_BOT_MSK) {
+        case OP_SET_REG:
+          cpu->reg_v[vx] = cpu->reg_v[vy];
+          cpu->reg_pc += 2;
+          break;
+        case OP_SET_OR:
+          cpu->reg_v[vx] |= cpu->reg_v[vy];
+          cpu->reg_pc += 2;
+          break;
+        case OP_SET_AND:
+          cpu->reg_v[vx] &= cpu->reg_v[vy];
+          cpu->reg_pc += 2;
+          break;
+        case OP_SET_XOR:
+          cpu->reg_v[vx] ^= cpu->reg_v[vy];
+          cpu->reg_pc += 2;
+          break;
+        case OP_ADD_REG:
+          if (cpu->reg_v[vy] > (0xFF - cpu->reg_v[vx])) {
+            cpu->reg_v[C8_CARRY] = 1;
+          } else {
+            cpu->reg_v[C8_CARRY] = 0;
+          }
+          cpu->reg_v[vx] += cpu->reg_v[vy];
+          cpu->reg_pc += 2;
+          break;
+      } 
       break;
   }
 }
