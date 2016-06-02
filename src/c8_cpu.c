@@ -22,23 +22,21 @@
 
 #define C8_INITIAL_ADDRESS 0x200
 
-typedef unsigned char C8_REG_8;
-typedef unsigned short C8_REG_16;
-typedef unsigned int C8_REG_32; 
+typedef unsigned short C8_INT_16;
 
 struct c8_stack {
-  C8_BYTE c8_stack[C8_STACK_SIZE];
-  C8_BYTE stack_pointer;
+  C8_INT_16 data[C8_STACK_SIZE];
+  C8_INT_16 pointer;
 };
 
 struct c8_cpu {
-  C8_REG_8 reg_v[C8_REG_COUNT];             // General Purpose Regs
-  C8_REG_16 reg_opcode;                     // Current Opcode Reg
-  C8_REG_16 reg_index;                      // Index Reg
-  C8_REG_16 reg_pc;                         // Program Counter
+  C8_BYTE reg_v[C8_REG_COUNT];             // General Purpose Regs
+  C8_INT_16 reg_opcode;                     // Current Opcode Reg
+  C8_INT_16 reg_index;                      // Index Reg
+  C8_INT_16 reg_pc;                         // Program Counter
 
-  C8_REG_8 reg_delay_timer;                 // When non zero, counts down
-  C8_REG_8 reg_sound_timer;                 // Plays sound when zero
+  C8_BYTE reg_delay_timer;                 // When non zero, counts down
+  C8_BYTE reg_sound_timer;                 // Plays sound when zero
 
   struct c8_stack stack;                    // Stores function return
 
@@ -50,12 +48,39 @@ struct c8_cpu {
 };
 
 INTERNAL void
+c8_stack_push(struct c8_stack* stack, C8_INT_16 x) {
+  if (stack->pointer >= C8_STACK_SIZE) {
+    // stack overflow
+    //TODO(bryan) add logging, and log this
+    fprintf(stderr, "Stack Overflow Error\n");
+    exit(2);
+  }
+  stack->data[stack->pointer++] = x;
+}
+
+INTERNAL void
+c8_stack_pop(struct c8_stack* stack) {
+  if (stack->pointer == 0) {
+    // stack underflow
+    //TODO(bryan) add logging, and log this
+    fprintf(stderr, "Stack Underflow Error\n");
+    exit(2);
+  }
+  stack->pointer--;
+}
+
+INTERNAL C8_INT_16
+c8_stack_top(struct c8_stack* stack) {
+  return stack->data[stack->pointer];
+}
+
+INTERNAL void
 c8_mem_dump(struct c8_cpu* cpu) {
   //TODO(bryan) set up proper logging, and dump this to file
   C8_BYTE* ram = cpu->ram;
   int i;
   for (i = 1; i <= C8_RAM_SIZE; i++) {
-    C8_REG_16 addr = ram[i] << 8 | ram[i + 1];
+    C8_INT_16 addr = ram[i] << 8 | ram[i + 1];
     fprintf(stdout, "Addr: %d - 0x%d  ", i, addr);
     if (i % 4  == 0) {
       fprintf(stdout, "\n");
@@ -86,20 +111,20 @@ c8_cpu_destroy(struct c8_cpu* cpu) {
   }
 }
 
-INTERNAL C8_REG_16
+INTERNAL C8_INT_16
 c8_fetch(struct c8_cpu* cpu) {
-  C8_REG_16 pc = cpu->reg_pc;
+  C8_INT_16 pc = cpu->reg_pc;
   C8_BYTE* ram = cpu->ram;
   return ram[pc] << 8 | ram[pc + 1];
 }
 
 INTERNAL void
-c8_decode(struct c8_cpu* cpu, C8_REG_16 op_code) {
+c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
   switch(op_code & AND_TOP_MSK) {
-    C8_REG_16 vx;
-    C8_REG_16 vy;
-    C8_REG_16 imm;
-    C8_REG_32 addr;
+    C8_INT_16 vx;
+    C8_INT_16 vy;
+    C8_INT_16 imm;
+    C8_INT_16 addr;
     case OP_0000:
       switch (op_code & AND_BOT_MSK) {
         case OP_CLR_SCN:
@@ -115,7 +140,8 @@ c8_decode(struct c8_cpu* cpu, C8_REG_16 op_code) {
           break;
       }
     case OP_JMP_ADR:
-      // decode address, adjust pc
+      addr = op_code & 0x0FFF;
+      cpu->reg_pc = addr;
       break;
     case OP_CLL_SUB:
       // push pc on stack, adjust pc
@@ -161,7 +187,7 @@ c8_decode(struct c8_cpu* cpu, C8_REG_16 op_code) {
 void
 c8_cpu_cycle(struct c8_cpu* cpu) {
 
-  C8_REG_16 op_code = c8_fetch(cpu);
+  C8_INT_16 op_code = c8_fetch(cpu);
   fprintf(stdout, "Fetched OPCode: 0x%d\n", op_code);
   c8_decode(cpu, op_code);
 
