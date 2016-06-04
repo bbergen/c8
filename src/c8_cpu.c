@@ -76,6 +76,11 @@ c8_stack_top(struct c8_stack* stack) {
 }
 
 INTERNAL void
+c8_reg_dump(struct c8_cpu* cpu) {
+  (void)cpu;
+}
+
+INTERNAL void
 c8_mem_dump(struct c8_cpu* cpu) {
   //TODO(bryan) set up proper logging, and dump this to file
   C8_BYTE* ram = cpu->ram;
@@ -208,7 +213,101 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
           cpu->reg_v[vx] += cpu->reg_v[vy];
           cpu->reg_pc += 2;
           break;
+        case OP_X_SUB_Y:
+          if (cpu->reg_v[vy] > cpu->reg_v[vx]) {
+            cpu->reg_v[C8_CARRY] = 1;
+          } else {
+            cpu->reg_v[C8_CARRY] = 0;
+          }
+          cpu->reg_v[vx] -= cpu->reg_v[vy];
+          cpu->reg_pc += 2;
+          break;
+        case OP_RS_REG:
+          if (cpu->reg_v[vx] % 2 == 1) {
+            cpu->reg_v[C8_CARRY] = 1;
+          } else {
+            cpu->reg_v[C8_CARRY] = 0;
+          }
+          cpu->reg_v[vx] >>= 1;
+          cpu->reg_pc += 2;
+          break;
+        case OP_Y_SUB_X:
+          if (cpu->reg_v[vx] > cpu->reg_v[vy]) {
+            cpu->reg_v[C8_CARRY] = 1;
+          } else {
+            cpu->reg_v[C8_CARRY] = 0;
+          }
+          cpu->reg_v[vx] = cpu->reg_v[vy] - cpu->reg_v[vx];
+          cpu->reg_pc += 2;
+          break;
+        case OP_LS_REG:
+          if ((cpu->reg_v[vx] & 0x80) == 0x80) {
+            cpu->reg_v[C8_CARRY] = 1; 
+          } else {
+            cpu->reg_v[C8_CARRY] = 0;
+          }
+          cpu->reg_v[vx] <<= 1;
+          cpu->reg_pc += 2;
+          break;
       } 
+      break;
+    case OP_NEQ_NEQ:
+      if (cpu->reg_v[vx] != cpu->reg_v[vy]) {
+        cpu->reg_pc += 2;
+      }
+      cpu->reg_pc += 2;
+      break;
+    case OP_SET_I:
+      addr = op_code & 0x0FFF;
+      cpu->reg_index = addr;
+      cpu->reg_pc += 2;
+      break;
+    case OP_JMP_V0:
+      addr = op_code & 0x0FFF;
+      addr += cpu->reg_v[0];
+      cpu->reg_pc = addr;
+      break;
+    case OP_SET_RND:
+      addr = op_code & 0x00FF;
+      //TODO(bryan) add addr with rand()
+      cpu->reg_v[vx] = addr;
+      cpu->reg_pc += 2;
+      break;
+    case OP_DRAW:
+      //TODO(bryan) implement
+      cpu->reg_pc += 2;
+      break;
+    case OP_E000:
+      switch (op_code & AND_BOT_MSK) {
+        case OP_KEY_DWN:
+          //TODO(bryan) implement
+          break;
+        case OP_KEY_UP:
+          //TODO(bryan) implement
+          break;
+      }
+      break;
+    case OP_F000:
+      switch (op_code & AND_EFF_MSK) {
+        case OP_DLY_SET:
+          break;
+        case OP_KEY_PRS:
+          break;
+        case OP_SET_DLY:
+          break;
+        case OP_SET_SND:
+          break;
+        case OP_ADD_I:
+          break;
+        case OP_SET_SPRT:
+          break;
+        case OP_SET_BCD:
+          break;
+        case OP_STR:
+          break;
+        case OP_LD:
+          break;
+      }
       break;
   }
 }

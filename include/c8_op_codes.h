@@ -31,7 +31,7 @@
 #define OP_LS_REG   0x000E  // 0x8XYE - VX << 1 (VF set to msb prior to shift)
 
 #define OP_NEQ_NEQ  0x9000  // 0x9XY0 - Skip next op if VX != VY
-#define OP_SET_IDX  0xA000  // 0xANNN - Sets I to address NNN
+#define OP_SET_I    0xA000  // 0xANNN - Sets I to address NNN
 #define OP_JMP_V0   0xB000  // 0xBNNN - Jumps to address (NNN + V0)
 #define OP_SET_RND  0xC000  // 0xCXNN - Set VX to (rand() & NN)
 #define OP_DRAW     0xD000  // 0xDXYN - Draw to screen (See Notes)
