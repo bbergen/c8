@@ -31,21 +31,21 @@ struct c8_stack {
 };
 
 struct c8_cpu {
-  C8_BYTE reg_v[C8_REG_COUNT];             // General Purpose Regs
+  C8_BYTE reg_v[C8_REG_COUNT];              // General Purpose Regs
   C8_INT_16 reg_opcode;                     // Current Opcode Reg
   C8_INT_16 reg_index;                      // Index Reg
   C8_INT_16 reg_pc;                         // Program Counter
 
-  C8_BYTE reg_delay_timer;                 // When non zero, counts down
-  C8_BYTE reg_sound_timer;                 // Plays sound when zero
+  C8_BYTE reg_delay_timer;                  // When non zero, counts down
+  C8_BYTE reg_sound_timer;                  // Plays sound when zero
 
   struct c8_stack stack;                    // Stores function return
 
-  C8_BYTE hex_keypad[C8_HEX_KEYS];       // Stores key states
+  C8_BYTE keys[C8_HEX_KEYS];                // Stores key states
 
-  C8_BYTE ram[C8_RAM_SIZE];
+  C8_BYTE ram[C8_RAM_SIZE];                 // 4kb System Ram
 
-  C8_BYTE screen[C8_SCREEN_PIXELS];
+  C8_BYTE screen[C8_SCREEN_PIXELS];         // 64x32 pixel b&w display
 };
 
 INTERNAL void
@@ -76,8 +76,13 @@ c8_stack_top(struct c8_stack* stack) {
 }
 
 INTERNAL void
+c8_stack_dump(struct c8_stack* stack) {
+  (void)stack; //TODO(bryan) implement
+}
+
+INTERNAL void
 c8_reg_dump(struct c8_cpu* cpu) {
-  (void)cpu;
+  (void)cpu; //TODO(bryan) implement
 }
 
 INTERNAL void
@@ -134,10 +139,13 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
     case OP_0000:
       switch (op_code & AND_BOT_MSK) {
         case OP_CLR_SCN:
-          // clear screen
+          //TODO(bryan) clear screen
+          cpu->reg_pc += 2;
           break;
         case OP_SUB_RTN:
-          // pop stack, adjust pc
+          cpu->reg_pc = c8_stack_top(&cpu->stack);
+          c8_stack_pop(&cpu->stack);
+          cpu->reg_pc += 2;
           break;
         default:
           //TODO(bryan) log error
@@ -280,10 +288,16 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
     case OP_E000:
       switch (op_code & AND_BOT_MSK) {
         case OP_KEY_DWN:
-          //TODO(bryan) implement
+          if (cpu->keys[cpu->reg_v[vx]]) {
+            cpu->reg_pc += 2;
+          }
+          cpu->reg_pc += 2;
           break;
         case OP_KEY_UP:
-          //TODO(bryan) implement
+          if (!cpu->keys[cpu->reg_v[vx]]) {
+            cpu->reg_pc += 2;
+          }
+          cpu->reg_pc += 2;
           break;
       }
       break;
