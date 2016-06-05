@@ -138,6 +138,29 @@ c8_fetch(struct c8_cpu* cpu) {
 }
 
 INTERNAL void
+c8_draw_sprite(struct c8_cpu* cpu, C8_INT_16 vx, C8_INT_16 vy, int height) {
+  C8_BYTE x = cpu->reg_v[vx];
+  C8_BYTE y = cpu->reg_v[vy];
+  C8_BYTE pixel;
+
+  cpu->reg_v[C8_CARRY] = 0;
+  int row;
+  for (row = 0; row < height; row++) {
+    pixel = cpu->ram[cpu->reg_index + row];
+
+    int col;
+    for (col = 0; col < 8; col++) {
+      if ((pixel & (0x80 >> col)) != 0) {
+        if (cpu->screen[(x + col + ((y + row) * 64))] == 1) {
+          cpu->reg_v[C8_CARRY] = 1;
+        }
+        cpu->screen[(x + col + ((y + row) * 64))] ^= 1;
+      }
+    }
+  }
+}
+
+INTERNAL void
 c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
   C8_INT_16 vx = op_code & 0x0F00 >> 8;
   C8_INT_16 vy = op_code & 0x00F0 >> 4;
@@ -290,7 +313,8 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
       cpu->reg_pc += 2;
       break;
     case OP_DRAW:
-      //TODO(bryan) implement
+      c8_draw_sprite(cpu, vx, vy, op_code & 0x00F);
+      //TODO(bryan) add draw flag to cpu struct, set true (1) here
       cpu->reg_pc += 2;
       break;
     case OP_E000:
@@ -339,7 +363,9 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
           cpu->reg_pc += 2;
           break;
         case OP_SET_BCD:
-          //TODO(bryan) bcd vx
+          cpu->ram[cpu->reg_index] = cpu->reg_v[vx] / 100;
+          cpu->ram[cpu->reg_index + 1] = (cpu->reg_v[vx] / 10) % 10;
+          cpu->ram[cpu->reg_index + 2] = (cpu->reg_v[vx] % 100) % 10;
           cpu->reg_pc += 2;
           break;
         case OP_STR:
