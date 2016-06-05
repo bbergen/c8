@@ -49,40 +49,19 @@ struct c8_cpu {
 };
 
 INTERNAL void
-c8_stack_push(struct c8_stack* stack, C8_INT_16 x) {
-  if (stack->pointer >= C8_STACK_SIZE) {
-    // stack overflow
-    //TODO(bryan) add logging, and log this
-    fprintf(stderr, "Stack Overflow Error\n");
-    exit(2);
-  }
-  stack->data[stack->pointer++] = x;
-}
-
-INTERNAL void
-c8_stack_pop(struct c8_stack* stack) {
-  if (stack->pointer == 0) {
-    // stack underflow
-    //TODO(bryan) add logging, and log this
-    fprintf(stderr, "Stack Underflow Error\n");
-    exit(2);
-  }
-  stack->pointer--;
-}
-
-INTERNAL C8_INT_16
-c8_stack_top(struct c8_stack* stack) {
-  return stack->data[stack->pointer];
-}
-
-INTERNAL void
 c8_stack_dump(struct c8_stack* stack) {
-  (void)stack; //TODO(bryan) implement
+  int i;
+  for (i = 0; i < C8_STACK_SIZE; i++) {
+    fprintf(stdout, "Address at %d: %u\n", i, stack->data[i]);
+  }
 }
 
 INTERNAL void
 c8_reg_dump(struct c8_cpu* cpu) {
-  (void)cpu; //TODO(bryan) implement
+  int i;
+  for (i = 0; i < C8_REG_COUNT; i++) {
+    fprintf(stdout, "Value at V%d: %d\n", i, cpu->reg_v[i]);
+  }
 }
 
 INTERNAL void
@@ -97,6 +76,35 @@ c8_mem_dump(struct c8_cpu* cpu) {
       fprintf(stdout, "\n");
     }
   }
+}
+
+INTERNAL void
+c8_stack_push(struct c8_stack* stack, C8_INT_16 x) {
+  if (stack->pointer >= C8_STACK_SIZE) {
+    // stack overflow
+    //TODO(bryan) add logging, and log this
+    fprintf(stderr, "Stack Overflow Error\n");
+    c8_stack_dump(stack);
+    exit(2);
+  }
+  stack->data[stack->pointer++] = x;
+}
+
+INTERNAL void
+c8_stack_pop(struct c8_stack* stack) {
+  if (stack->pointer == 0) {
+    // stack underflow
+    //TODO(bryan) add logging, and log this
+    fprintf(stderr, "Stack Underflow Error\n");
+    c8_stack_dump(stack);
+    exit(2);
+  }
+  stack->pointer--;
+}
+
+INTERNAL C8_INT_16
+c8_stack_top(struct c8_stack* stack) {
+  return stack->data[stack->pointer];
 }
 
 struct c8_cpu*
