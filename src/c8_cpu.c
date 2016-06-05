@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "c8_cpu.h"
 #include "c8_op_codes.h"
 
@@ -114,6 +115,10 @@ c8_cpu_init(void) {
   // set program counter
   cpu->reg_pc = C8_INITIAL_ADDRESS;
 
+  // initialize random number generator
+  time_t t;
+  srand((unsigned) time(&t));
+
   //TODO(bryan) load font set
   return cpu;
 }
@@ -135,6 +140,14 @@ c8_fetch(struct c8_cpu* cpu) {
   C8_INT_16 pc = cpu->reg_pc;
   C8_BYTE* ram = cpu->ram;
   return ram[pc] << 8 | ram[pc + 1];
+}
+
+INTERNAL void
+c8_clear_screen(struct c8_cpu* cpu) {
+  int i;
+  for (i = 0; i < C8_SCREEN_PIXELS; i++) {
+    cpu->screen[i] = 0;
+  }
 }
 
 INTERNAL void
@@ -170,7 +183,7 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
     case OP_0000:
       switch (op_code & AND_BOT_MSK) {
         case OP_CLR_SCN:
-          //TODO(bryan) clear screen
+          c8_clear_screen(cpu);
           cpu->reg_pc += 2;
           break;
         case OP_SUB_RTN:
@@ -308,7 +321,7 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
       break;
     case OP_SET_RND:
       addr = op_code & 0x00FF;
-      //TODO(bryan) add addr with rand()
+      addr &= rand();
       cpu->reg_v[vx] = addr;
       cpu->reg_pc += 2;
       break;
