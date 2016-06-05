@@ -36,8 +36,8 @@ struct c8_cpu {
   C8_INT_16 reg_index;                      // Index Reg
   C8_INT_16 reg_pc;                         // Program Counter
 
-  C8_BYTE reg_delay_timer;                  // When non zero, counts down
-  C8_BYTE reg_sound_timer;                  // Plays sound when zero
+  C8_BYTE reg_delay;                        // When non zero, counts down
+  C8_BYTE reg_sound;                        // Plays sound when zero
 
   struct c8_stack stack;                    // Stores function return
 
@@ -304,22 +304,43 @@ c8_decode(struct c8_cpu* cpu, C8_INT_16 op_code) {
     case OP_F000:
       switch (op_code & AND_EFF_MSK) {
         case OP_DLY_SET:
+          cpu->reg_v[vx] = cpu->reg_delay;
+          cpu->reg_pc += 2;
           break;
         case OP_KEY_PRS:
+          //TODO(bryan) implement keypress wait
+          ; // empty statement cause C99 is weird
+          char tmp = getchar(); // tmp to pause the cpu
+          (void)tmp;
+          cpu->reg_pc += 2;
           break;
         case OP_SET_DLY:
+          cpu->reg_delay = cpu->reg_v[vx];
+          cpu->reg_pc += 2;
           break;
         case OP_SET_SND:
+          cpu->reg_sound = cpu->reg_v[vx];
+          cpu->reg_pc += 2;
           break;
         case OP_ADD_I:
+          cpu->reg_index += cpu->reg_v[vx];
+          cpu->reg_pc += 2;
           break;
         case OP_SET_SPRT:
+          //TODO(bryan) load location of the 0-F char in vx to to reg_index
+          cpu->reg_pc += 2;
           break;
         case OP_SET_BCD:
+          //TODO(bryan) bcd vx
+          cpu->reg_pc += 2;
           break;
         case OP_STR:
+          //TODO(bryan) store v0 - vX (inc) to memory starting at reg_index
+          cpu->reg_pc += 2;
           break;
         case OP_LD:
+          //TODO(bryan) load memory starting at reg_index to reg v0 -> vX (inc)
+          cpu->reg_pc += 2;
           break;
       }
       break;
