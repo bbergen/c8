@@ -40,13 +40,12 @@ main(int argc, char **argv) {
 
   fprintf(stdout, "Loaded %s - %d bytes\n", file_name, file_size);
 
-  struct c8_cpu* cpu = c8_cpu_init();
+  struct c8_cpu* cpu = c8_cpu_init(file_name);
   c8_cpu_load_rom(cpu, c8_rom, file_size);
   c8_unload_binary(c8_rom);
 
   int running = 1;
 
-  //TODO(bryan) initialize graphics here
   while (running) {
     c8_cpu_cycle(cpu);
 
@@ -56,7 +55,6 @@ main(int argc, char **argv) {
 
     c8_cpu_update_key_state(cpu);
   }
-
 
   c8_cpu_destroy(cpu);
   return 0;

@@ -16,7 +16,7 @@ struct c8_cpu;
 * Allocates and initializes a c8_cpu for use
 */
 struct c8_cpu*
-c8_cpu_init(void);
+c8_cpu_init(char*);
 
 /*
 * Maps a loaded rom to the c8_cpu's memory space

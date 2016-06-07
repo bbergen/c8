@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include "c8_cpu.h"
+#include "c8_gfx_context.h"
 #include "c8_op_codes.h"
 
 /************************************************************
@@ -15,6 +16,9 @@
 
 #define INTERNAL static
 
+#define C8_GFX_SCALE 10
+#define C8_GFX_WIDTH 64 * C8_GFX_SCALE
+#define C8_GFX_HEIGHT 32 * C8_GFX_SCALE
 #define C8_REG_COUNT 16
 #define C8_STACK_SIZE 16
 #define C8_HEX_KEYS 16
@@ -47,6 +51,8 @@ struct c8_cpu {
   C8_BYTE ram[C8_RAM_SIZE];                 // 4kb System Ram
 
   C8_BYTE screen[C8_SCREEN_PIXELS];         // 64x32 pixel b&w display
+
+  struct c8_gfx_context* gfx;
 };
 
 INTERNAL void
@@ -109,7 +115,7 @@ c8_stack_top(struct c8_stack* stack) {
 }
 
 struct c8_cpu*
-c8_cpu_init(void) {
+c8_cpu_init(char* title) {
   struct c8_cpu* cpu = calloc(1, sizeof(struct c8_cpu));
 
   // set program counter
@@ -118,6 +124,9 @@ c8_cpu_init(void) {
   // initialize random number generator
   time_t t;
   srand((unsigned) time(&t));
+
+  // initialize graphics context
+  cpu->gfx = c8_gfx_init(C8_GFX_WIDTH, C8_GFX_HEIGHT, title);
 
   //TODO(bryan) load font set
   return cpu;
@@ -131,6 +140,7 @@ c8_cpu_load_rom(struct c8_cpu* cpu, C8_BYTE* rom, int rom_size) {
 void
 c8_cpu_destroy(struct c8_cpu* cpu) {
   if (cpu) {
+    c8_gfx_destroy(cpu->gfx);
     free(cpu);
   }
 }
@@ -398,7 +408,6 @@ void
 c8_cpu_cycle(struct c8_cpu* cpu) {
 
   C8_INT_16 op_code = c8_fetch(cpu);
-  fprintf(stdout, "Fetched OPCode: 0x%d\n", op_code);
   c8_decode(cpu, op_code);
 
   // update timers
@@ -412,8 +421,8 @@ c8_cpu_draw_flag_set(struct c8_cpu* cpu) {
 
 void
 c8_cpu_update_key_state(struct c8_cpu* cpu) {
-  (void)cpu;
-  //TODO(bryan) implement
+  //TODO(bryan) chip8 hex key translations
+  c8_gfx_update_keys(cpu->gfx);
 }
 
 
