@@ -2,8 +2,8 @@
 
 * [CHIP8](https://en.wikipedia.org/wiki/CHIP-8)
 * Dependencies:
-  * Probably SDL Once I get to the graphics output stage
-  * build-essentials
+  * `libsdl2-dev` OR `libncurses5-dev`
+  * `build-essentials`
 * To Build:
   * `git clone git@github.com:bbergen/c8.git`
   * `cd c8`
