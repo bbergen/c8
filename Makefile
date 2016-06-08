@@ -27,6 +27,8 @@ DLINK_FLAGS =
 DESTDIR = /
 # Install path (bin/ is appended automatically)
 INSTALL_PREFIX = usr/local
+# Configuration for Graphical Front End (sdl OR ncurses)
+FRONT_END_EXCLUDE = ncurses
 #### END PROJECT SETTINGS ####
 
 # Generally should not need to edit below this line
@@ -78,10 +80,11 @@ install: export BIN_PATH := bin/release
 # Find all source files in the source directory, sorted by most
 # recently modified
 ifeq ($(UNAME_S),Darwin)
-	SOURCES = $(shell find $(SRC_PATH)/ -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-)
+	SOURCES = $(shell find $(SRC_PATH)/ -name '*.$(SRC_EXT)' \
+						| grep -v $(FRONT_END_EXCLUDE) | sort -k 1nr | cut -f2-)
 else
 	SOURCES = $(shell find $(SRC_PATH)/ -name '*.$(SRC_EXT)' -printf '%T@\t%p\n' \
-						| sort -k 1nr | cut -f2-)
+						| grep -v $(FRONT_END_EXCLUDE) | sort -k 1nr | cut -f2-)
 endif
 
 # fallback in case the above fails
