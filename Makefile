@@ -17,8 +17,15 @@ RCOMPILE_FLAGS = -D NDEBUG
 DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I include/
+# Configuration for Graphical Front End (sdl OR ncurses)
+FRONT_END_EXCLUDE = ncurses
+#FRONT_END_EXCLUDE = sdl
 # General linker settings
-LINK_FLAGS = -lSDL2 -lncurses 
+ifneq ($(FRONT_END_EXCLUDE), sdl)
+  LINK_FLAGS = -lSDL2 
+else
+  LINK_FLAGS = -lncurses
+endif
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings
@@ -27,9 +34,6 @@ DLINK_FLAGS =
 DESTDIR = /
 # Install path (bin/ is appended automatically)
 INSTALL_PREFIX = usr/local
-# Configuration for Graphical Front End (sdl OR ncurses)
-FRONT_END_EXCLUDE = ncurses
-#FRONT_END_EXCLUDE = sdl
 #### END PROJECT SETTINGS ####
 
 # Generally should not need to edit below this line
