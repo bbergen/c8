@@ -42,12 +42,18 @@ c8_gfx_update_keys(struct c8_gfx_context* gfx) {
 
 void
 c8_gfx_clear(struct c8_gfx_context* gfx) {
-  //TODO(bryan) implement
-  (void)gfx;
+  SDL_SetRenderDrawColor(gfx->renderer, 255, 255, 255, 255);
+  SDL_RenderClear(gfx->renderer);
 }
 
 void
-c8_gfx_draw(struct c8_gfx_context* gfx) {
-  //TODO(bryan) implement
-  (void)gfx;
+c8_gfx_draw(struct c8_gfx_context* gfx,
+    void* buffer,
+    size_t element_size,
+    int buffer_size) {
+  (void)buffer;
+  (void)element_size;
+  (void)buffer_size;
+  //TODO(bryan) render screen
+  SDL_RenderPresent(gfx->renderer);
 }

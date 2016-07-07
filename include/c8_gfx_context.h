@@ -4,7 +4,7 @@
 struct c8_gfx_context;
 
 void
-c8_gfx_draw(struct c8_gfx_context*);
+c8_gfx_draw(struct c8_gfx_context*, void*, size_t, int);
 
 void
 c8_gfx_clear(struct c8_gfx_context*);

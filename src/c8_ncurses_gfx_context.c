@@ -8,8 +8,14 @@ struct c8_gfx_context {
 };
 
 void
-c8_gfx_draw(struct c8_gfx_context* gfx) {
+c8_gfx_draw(struct c8_gfx_context* gfx,
+    void* buffer,
+    size_t element_size,
+    int buffer_size) {
   (void)gfx;
+  (void)buffer;
+  (void)element_size;
+  (void)buffer_size;
 }
 
 void
